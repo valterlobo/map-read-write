@@ -5,6 +5,7 @@ import (
 	"map-read-write/registro"
 	"map-read-write/repositorio"
 	"map-read-write/writer"
+	"strconv"
 	"time"
 )
 
@@ -20,39 +21,42 @@ func main() {
 	pathDatabase := repositorio.CreateDatabase()
 	personRepository := repositorio.NewPersonRepository(pathDatabase)
 
-	var pReg registro.Person
-	pReg = personRepository.CreatePerson(registro.Person{
-		Firstname: "First Teste",
-		Lastname:  "Last Test",
-	})
-
-	pReg = personRepository.CreatePerson(registro.Person{
-		Firstname: "First Teste 1",
-		Lastname:  "Last Test 1",
-	})
-
-	birthDate, errTime := time.Parse("2006-01-02", "1975-06-01")
+	birthDate, errTime := time.Parse("2006-01-01", "2001-08-01")
 	fmt.Println(birthDate)
 	fmt.Println(errTime)
 
-	pReg = personRepository.CreatePerson(registro.Person{
-		Firstname:    "First Teste 2",
-		Lastname:     "Last Test 2",
-		AnnualIncome: 2000000.5050404,
-		BirthDate:    birthDate,
-	})
+	for i := 0; i < 100; i++ {
 
-	//INSERT JSON  JSON
-	strJson := pReg.ToJson()
-	fmt.Println(strJson)
-	personRepository.CreatePersonJSON(pReg)
+		//person 1
+		pReg1 := personRepository.CreatePerson(registro.Person{
+			Firstname:    "First Teste " + strconv.Itoa(i),
+			Lastname:     "Lastname    " + strconv.Itoa(i),
+			AnnualIncome: 2000000.5050404,
+			BirthDate:    birthDate,
+		})
+
+		//person 2
+		pReg2 := personRepository.CreatePerson(registro.Person{
+			Firstname:    "Person 2" + strconv.Itoa(i),
+			Lastname:     "Last person 2" + strconv.Itoa(i),
+			AnnualIncome: 2000000.5050404,
+			BirthDate:    birthDate,
+		})
+
+		//INSERT JSON - person 1
+		personRepository.CreatePersonJSON(pReg1)
+
+		strJsonPerson1 := personRepository.GetPersonJson(pReg1.Id)
+		fmt.Println(strJsonPerson1)
+
+		//INSERT JSON  person 2
+		personRepository.CreatePersonJSON(pReg2)
+		strJsonPerson2 := personRepository.GetPersonJson(pReg2.Id)
+		fmt.Println(strJsonPerson2)
+
+	}
 
 	persons := personRepository.SelectAllPerson()
 	writer.WriterPersons(persons)
-	p := personRepository.GetPerson(pReg.Id)
-	fmt.Println(p)
-
-	strJsonPerson := personRepository.GetPersonJson(pReg.Id)
-	fmt.Println(strJsonPerson)
 
 }
