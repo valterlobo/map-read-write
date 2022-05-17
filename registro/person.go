@@ -1,11 +1,17 @@
 package registro
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+	"time"
+)
 
 type Person struct {
-	Id        int  `db:"id" `
-	Firstname string `db:"firstname" `
-	Lastname  string `db:"lastname" `
+	Id           int    `db:"id" `
+	Firstname    string `db:"firstname" `
+	Lastname     string `db:"lastname" `
+	BirthDate    time.Time
+	AnnualIncome float64
 }
 
 func (u *Person) TableName() string {
@@ -28,4 +34,14 @@ func (r *Person) ToArray() []string {
 		r.Firstname,
 		r.Lastname,
 	}
+}
+
+func (r *Person) ToJson() string {
+
+	json, err := json.Marshal(&r)
+	if err != nil {
+		panic(err)
+
+	}
+	return string(json)
 }

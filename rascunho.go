@@ -5,6 +5,7 @@ import (
 	"map-read-write/registro"
 	"map-read-write/repositorio"
 	"map-read-write/writer"
+	"time"
 )
 
 /***
@@ -30,14 +31,28 @@ func main() {
 		Lastname:  "Last Test 1",
 	})
 
+	birthDate, errTime := time.Parse("2006-01-02", "1975-06-01")
+	fmt.Println(birthDate)
+	fmt.Println(errTime)
+
 	pReg = personRepository.CreatePerson(registro.Person{
-		Firstname: "First Teste 2",
-		Lastname:  "Last Test 2",
+		Firstname:    "First Teste 2",
+		Lastname:     "Last Test 2",
+		AnnualIncome: 2000000.5050404,
+		BirthDate:    birthDate,
 	})
+
+	//INSERT JSON  JSON
+	strJson := pReg.ToJson()
+	fmt.Println(strJson)
+	personRepository.CreatePersonJSON(pReg)
 
 	persons := personRepository.SelectAllPerson()
 	writer.WriterPersons(persons)
 	p := personRepository.GetPerson(pReg.Id)
 	fmt.Println(p)
+
+	strJsonPerson := personRepository.GetPersonJson(pReg.Id)
+	fmt.Println(strJsonPerson)
 
 }

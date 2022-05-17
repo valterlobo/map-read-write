@@ -2,8 +2,9 @@ package repositorio
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"map-read-write/registro"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type PersonRepository struct {
@@ -35,6 +36,21 @@ func (pRepo PersonRepository) CreatePerson(pReg registro.Person) registro.Person
 
 }
 
+func (pRepo PersonRepository) CreatePersonJSON(pReg registro.Person) string {
+
+	statement, errorPrepare := pRepo.database.Prepare("INSERT INTO people_json (ID,JSON_VALUE) VALUES (?,?)")
+	if errorPrepare != nil {
+		panic(errorPrepare)
+	}
+	strJson := pReg.ToJson()
+	_, errorExec := statement.Exec(pReg.Id, strJson)
+
+	if errorExec != nil {
+		panic(errorPrepare)
+	}
+	return strJson
+}
+
 func (pRepo PersonRepository) GetPerson(id int) registro.Person {
 
 	pReg := registro.Person{}
@@ -43,6 +59,16 @@ func (pRepo PersonRepository) GetPerson(id int) registro.Person {
 		panic(err)
 	}
 	return pReg
+}
+
+func (pRepo PersonRepository) GetPersonJson(id int) string {
+
+	strJsonPerson := ""
+	err := pRepo.database.QueryRow("select JSON_VALUE from people_json  where ID= ?", id).Scan(&strJsonPerson)
+	if err != nil {
+		panic(err)
+	}
+	return strJsonPerson
 }
 
 func (pRepo PersonRepository) SelectAllPerson() []registro.Person {
@@ -61,8 +87,7 @@ func (pRepo PersonRepository) SelectAllPerson() []registro.Person {
 	return arrayPerson
 }
 
+func (pRepo PersonRepository) Close() {
 
-func (pRepo PersonRepository) Close()  {
-	
 	pRepo.database.Close()
 }

@@ -62,3 +62,11 @@ func GetConnection(dataSourceName string) *sql.DB {
 	}
 	return database
 }
+
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+

@@ -9,3 +9,5 @@ CREATE TABLE contacts (
                           email TEXT NOT NULL UNIQUE,
                           phone TEXT NOT NULL UNIQUE
 );
+
+CREATE TABLE people_json (ID INTEGER PRIMARY KEY,  JSON_VALUE TEXT);
